@@ -57,7 +57,7 @@ SourceList["WBN:W"] = {
 	"etherealness", "finger of death", "forcecage", "magnificent mansion", "mirage arcane", "plane shift", "prismatic spray", "project image", "regenerate", "reverse gravity", "sequester", "simulacrum", "symbol", "teleport",
 
 	//level 8
-	"animal shapes", "antimagic field", "antipathy/sympathy", "control weather", "demiplane", "earthquake", "feeblemind", "maze", "mind blank", "miser's menace", "power word stun"
+	"animal shapes", "antimagic field", "antipathy/sympathy", "control weather", "demiplane", "earthquake", "feeblemind", "maze", "mind blank", "miser's menace", "power word stun",
 
 	//level 9
 	"astral projection", "foresight", "gate", "imprisonment", "mass heal", "power word kill", "prismatic wall", "shapechange", "true polymorph", "weird", "wish"
