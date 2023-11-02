@@ -23,179 +23,101 @@
 var iFileName = "Worlds Beyond Number: Witch Class Playtest v1.0.js";
 RequiredSheetVersion("13.0.6");
 
+SourceList["WBN:W"] = {
+	name : "Worlds Beyond Number Patreon Early Access: Playtestable Witch Class",
+	abbreviation : "WBN:W",
+	group : "Worlds Beyond Number",
+	url : "https://www.patreon.com/posts/patreon-early-91306717",
+	date : "2023/10/19"
+};
+
+//first make the sheet know which spells are shaman spells
+[//level 0 (cantrips)
+	"acid splash", "cackle", "guidance", "light", "mending", "message", "minor illusion", "produce flame", "resistance", "shillelagh", "true strike",
+
+	//level 1
+	"animal friendship", "alarm", "bane", "bless", "command", "cure wounds", "detect evil and good", "detect magic", "detect poison and disease", "disguise self", "fog cloud", "heroism", "hideous laughter", "inflict wounds", "protection from evil and good", "shield", "silent image", "sleep", "speak with animals", "witch's grasp",
+	
+	//level 2
+	"aid", "animal messenger", "arcane lock", "augury", "blindness/deafness", "breath of belladonna", "cleansing crystal", "continual flame", "darkness", "darkvision", "detect thoughts", "enhance ability", "enlarge/reduce", "gust of wind", "heat metal", "hold person", "invisibility", "lesser restoration", "levitate", "magic mouth", "misty step", "protection from poison", "ray of enfeeblement", "see invisibility", "scorching ray", "shatter", "silence", "spider climb", "tongue-tie", "web",
+
+	//level 3
+	"bestow curse", "clairvoyance", "counterspell", "create poppet", "dispel magic", "fear", "fly", "gaseous form", "glyph of warding", "hypnotic pattern", "magic circle", "major image", "nondetection", "phantom steed", "protection from energy", "remove curse", "sending", "slow", "speak with dead", "swineskin", "tiny hut", "tongues", "water breathing", "water walk",
+
+	//level 4
+	"arcane eye", "banishment", "confusion", "conjure minor elementals", "conjure woodland beings", "control water", "death ward", "dimension door", "divination", "fabricate", "faithful hound", "fire shield", "giant insect", "locate creature", "polymorph", "private sanctum", "secret chest", "spellwarping curse", "stone shape", "stoneskin", "wall of fire", "wyrding",
+
+	//level 5
+	"animate hut", "animate objects", "arcane hand", "awaken", "commune", "conjure elemental", "contact other plane", "creation", "dispel evil and good", "dream", "geas", "greater restoration", "hallow", "insect plague", "legend lore", "mass cure wounds", "modify memory", "othershoes", "passwall", "planar binding", "scrying", "seeming", "telekinesis", "telepathic bond", "teleportation circle", "wall of force", "wall of stone",
+
+	//level 6
+	"conjure fey", "contingency", "create undead", "eyebite", "find the path", "flesh to stone", "forbiddance", "globe of invulnerability", "guards and wards", "harm", "heal", "heroes' feast", "instant summons", "irresistible dance", "magic jar", "move earth", "planar ally", "programmed illusion", "transport via plants", "true seeing", "wall of ice", "wall of thorns",
+
+	//level 7
+	"etherealness", "finger of death", "forcecage", "magnificent mansion", "mirage arcane", "plane shift", "prismatic spray", "project image", "regenerate", "reverse gravity", "sequester", "simulacrum", "symbol", "teleport",
+
+	//level 8
+	"animal shapes", "antimagic field", "antipathy/sympathy", "control weather", "demiplane", "earthquake", "feeblemind", "maze", "mind blank", "miser's menace", "power word stun"
+
+	//level 9
+	"astral projection", "foresight", "gate", "imprisonment", "mass heal", "power word kill", "prismatic wall", "shapechange", "true polymorph", "weird", "wish"
+].forEach( function (s) {
+	if(SpellsList[s] && SpellsList[s].classes && SpellsList[s].classes.indexOf("witch") === -1) SpellsList[s].classes.push("witch");
+});
+
 ClassList["witch"] = {
 	name : "Witch",
 	regExpSearch : /witch/i,
-	source : ["SRD", 30],
-/*	source // REQUIRED //
-	TYPE:	array with two entries (or array of these arrays)
-	USE:	define where the class is found
+	source : ["WBN:01", 2],
+	defaultExcluded : false,
+	primaryAbility : "Wisdom",
+	prereqs : "Wisdom 13",
+	die : 6,
+	improvements : [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5],
+	saves : ["Wis", "Cha"],
 
-	This attribute is used by the sheet to determine if the class should be available depending on the sources included and excluded.
-
-	This array has two entries, a string followed by a number
-	1. string
-		The first entry has to be the object name of a SourceList object.
-	2. number
-		The second entry is the page number to find the class at.
-		This can be any number and is ignored if it is a 0.
-
-	See the "source (SourceList).js" file for learning how to add a custom source.
-
-	Alternatively, this can be an array of arrays to indicate it appears in multiple sources.
-	For example, if something appears on both page 7 of the Elemental Evil Player's Companion
-	 and on page 115 of the Sword Coast Adventure Guide, use the following:
-		source : [["E", 7], ["S", 115]],
-
-	If a class is completely homebrew, or you don't want to make a custom source, just put the following:
-		source : ["HB", 0],
-	"HB" refers to the'homebrew' source.
-*/
-	defaultExcluded : true,
-/*	defaultExcluded // OPTIONAL //
-	TYPE:	boolean
-	USE:	whether this class should be excluded by default (true) or included by default (false)
-
-	Include this attribute and set it to true if the class should appear in the Excluded list of the
-	Source Selection Dialog when the script is added for the first time.
-	It will have to be manually set to be included before it is used by the sheet's automation.
-	The user will be made aware of this exclusion.
-
-	Note that if a class is excluded, none of its subclasses will be accessible either.
-
-	This is useful for optional classes that you wouldn't normally want to use (e.g. playtest or campaign-specific).
-
-	Setting this attribute to false is the same as not including this attribute.
-*/
-	primaryAbility : "Strength or Dexterity",
-/*	primaryAbility // REQUIRED //
-	TYPE:	string
-	USE:	abilities that are essential to the class to be displayed in the Ability Scores dialog
-
-	If there are no essential abilities, just put an empty string:
-		primaryAbility : "",
-*/
-	prereqs : "Strength 13 or Dexterity 13",
-/*	prereqs // REQUIRED //
-	TYPE:	string
-	USE:	prerequisite abilities to multiclass in the class, to be displayed in the Ability Scores dialog when multiclassing
-
-	If there are no prerequisite abilities, just put an empty string:
-		prereqs : "",
-*/
-	die : 10,
-/*	die // REQUIRED //
-	TYPE:	number
-	USE:	number of the type of hit die the class has (i.e. 10 means d10)
-
-	You can't have multiple HD for a class (2d6 per level is not possible).
-*/
-	improvements : [0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7],
-/*	improvements // REQUIRED //
-	Array of the amount of ability score improvements the class has at each level.
-	Normally this is an array of 20 entries, one for each level, but you can have more or less.
-	Note that this is not cumulative, the number is the amount of ASI at that level.
-	This example uses the Fighter's progression.
-	If the class doesn't get any improvements, just put the following:
-		improvements : [0],
-*/
-	saves : ["Str", "Con"],
-/*	improvements // OPTIONAL //
-	Array of the saving throw proficiencies the class gets, using the name of an ability.
-	You have to include at least the first three-letters of an ability, and capitalization doesn't matter.
-	Thus, an array entry can be "Str", "Dex", "Con", "Int", "Wis, or "Cha".
-*/
 
 // EVERYTHING BELOW THIS LINE IS NOT UPDATED TO v13 YET!
 
-	skills : ["\n\n" + toUni("MyClass") + ": Choose two from Acrobatics, Animal Handling, Athletics, History, Insight, Intimidation, Perception, and Survival.", "\n\n" + toUni("MyClass") + ": Choose one from Athletics, Intimidation, Perception, and Survival."], //required; the text to display for skill proficiencies. Note the \n\n at the start, they are important! The first entry is for when the class is the primary class, the second entry is for when the class is taken later as part of a multiclass
-
-/* SYNTAX CHANGE v12.998 >> old syntax for 'tools' and 'languages' are no longer supported!! */
-	toolProfs : { // optional; this is an object with arrays with the tool proficiencies gained. Each entry in an array can be its own array of 2 entries. The first entry is the name of the tool and the second entry is either 1) a number if the tool is yet to be chosen, or 2) the 3-letter ability score abbreviation if the tool is to be listed in the skill section and have a bonus calculated
-		primary : [["Musical instrument", 3], ["Thieves' tools", "Dex"]], // optional; the tool proficiencies gained if the class is the primary class (i.e. taken at 1st level)
-		secondary : [["Musical instrument", 1]] // optional; the tool proficiencies gained if the class is not the primary class (i.e. taken at a later level)
+	skills : ["\n\n" + toUni("Witch") + ": Choose three from Animal Handling, Arcana, Insight, Intimidation, Medicine, Nature, Perception, Persuasion, and Survival.", "\n\n" + toUni("MyClass") + ": Choose three from Animal Handling, Arcana, Insight, Intimidation, Medicine, Nature, Perception, Persuasion, and Survival."], 
+	toolProfs : { 
+		primary : [["Artisan's Tool", 2]],
+		secondary : [["Artisan's Tool", 2]]
+	}
+	armor : [ 
+		[false, false, false, false], 
+		[false, false, false, false]
+	],
+	weapons : [ 
+		[true, false, false], 
+		[true, false, false] 
+	],
+	equipment : "Witch starting equipment:\n \u2022 A light crossbow and 20 bolts -or- any simple weapon;\n \u2022 A component pouch -or- an arcane focus;\n \u2022 A scholar's pack -or- an explorer's pack;\n \u2022 Two daggers.",
+	subclasses : ["Coven", ["coven of the claw", "coven of the green", "coven of the heart", "coven of the wicked"]], 
+	attacks : [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	abilitySave : 5, 
+	spellcastingFactor : 1, 
+	spellcastingKnown : { 
+		spells : "list"
+		prepared : true, 
 	},
 
-	armor : [ //required; the 4 entries are for: ["light", "medium", "heavy", "shields"]
-		[true, true, true, true], //required; the armor proficiencies if this is the first or only class
-		[true, true, false, true] //required; the armor proficiencies if this class is multiclassed with (so not taken at level 1, but later)
-	],
 
-	weapons : [ //required; the 3 entries are for: ["simple", "martial", "other"]
-		[true, false, ["hand crossbow", "longsword", "rapier", "shortsword"]], //required; the weapon proficiencies if this is the first or only class
-		[true, false, ["hand crossbow"]] //required; the weapon proficiencies if this class is multiclassed with (so not taken at level 1, but later)
-	],
-
-	equipment : "MyClass starting equipment:\n \u2022 Chain mail -or- leather armor, a longbow, and 20 arrows;\n \u2022 A martial weapon and a shield -or- two martial weapons;\n \u2022 A light crossbow and 20 bolts -or- two handaxes;\n \u2022 A dungeoneer's pack -or- an explorer's pack.\n\nAlternatively, choose 5d4 \xD7 10 gp worth of starting equipment instead of both the class' and the background's starting equipment.", //required; the text to display when citing the starting equipment
-
-	subclasses : ["Martial Archetype", ["champion", "battle master", "eldritch knight", "purple dragon knight"]], //required; the names of the subclasses. The first entry is the overall name that is given to the subclasses, the second entry is a list of the subclass, using the exact names of the entry of the subclasses in the ClassSubList. //Note that if one of the entries in the array of subclasses doesn't exist in the ClassSubList, the sheet will throw an error as soon as you make a character with levels in this class
-	//IMPORTANT: for any subclass you add using the AddSubClass() function, don't list them here! The AddSubClass() function makes its own entry in this array! If you have entries here that don't exist (because you didn't add any ClassSubList entry, or added it using the AddSubClass() function, then the sheet will throw strange errors)!
-
-	prestigeClassPrereq : 5, //optional; if you include this attribute, the sheet will consider the class a prestige class // You can make this attribute a number, which represents the levels the character must have before being able to gain the prestige class. Alternatively, you can make this attribute a string, which can be evaluated with eval() and returns either true (prereqs met) or false (prereqs not met).
-
-	attacks : [1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3], //required; the amount of attacks at each level. Note that there are 20 entries, one for each level.
-
-	abilitySave : 4, //optional, but required for a spellcaster; the ability score to use for the Ability Saving Throws. Remove this line if your class has no Ability that requires Saving Throws. (Str=1, Dex=2, Con=3, Int=4, Wis=5, Cha=6)
-
-	abilitySaveAlt : 2,//optional; if the class offers a choice between two ability scores to be used to determine the DC, you can put that secondary one here (Str=1, Dex=2, Con=3, Int=4, Wis=5, Cha=6)
-
-	spellcastingFactor : 3, //required for a spellcaster; the speed with which spell progression works type 1 for full spellcasting (Cleric), 2 for half spellcasting (Paladin), and 3 for one-third spellcasting (Arcane Trickster). This can be any positive number other than 0. Remove this line if your class has no spellcasting. If your character uses the Warlock way of spellcasting, write "warlock1" here. The 1 indicates the spell progression factor. You can change it to a 2 or 3 to have half or one-third spell progression (or to any other factor you like).
-		// You can also have this refer to a Spell Slot progression you define yourself, as a separate variable (see "Homebrew Syntax - SpellTable.js"). In order to do this the name of that variable and the spellcastingFactor must match. Using the name "purplemancer" for example would mean that here you put [spellcastingFactor : "purplemancer1"] (the 1 is the factor, this can be any positive number other than 0) while for the variable containing the table you use "purplemancerSpellTable". Note that the name is all lower case!
-
-	spellcastingTable : [ //optional, only if you want to use a non-standard table for spell slot progression and just for this one (sub)class. You can either use the spellcastingTable attribute, or define a new SpellTable in a separate variable (see "Homebrew Syntax - SpellTable.js"). If you are adding multiple classes that use the same table, please add it as a separate variable, for otherwise the spell slots will be added up per individual class level instead of adding the class levels together to find the total amount of spell slots
-	// if you add this variable, the number in the spellcastingFactor will be only be used when multiclassing. Note that you still need to enter something in the spellcastingFactor to tell the sheet that its dealing with a spellcaster.
-		[0, 0, 0, 0, 0, 0, 0, 0, 0], //lvl 0
-		[0, 0, 0, 0, 0, 0, 0, 0, 0], //lvl 1
-		[0, 0, 0, 0, 0, 0, 0, 0, 0], //lvl 2
-		[1, 0, 0, 0, 0, 0, 0, 0, 0], //lvl 3
-		[1, 0, 0, 0, 0, 0, 0, 0, 0], //lvl 4
-		[2, 0, 0, 0, 0, 0, 0, 0, 0], //lvl 5
-		[2, 0, 0, 0, 0, 0, 0, 0, 0], //lvl 6
-		[0, 2, 0, 0, 0, 0, 0, 0, 0], //lvl 7
-		[0, 2, 0, 0, 0, 0, 0, 0, 0], //lvl 8
-		[0, 2, 0, 0, 0, 0, 0, 0, 0], //lvl 9
-		[0, 2, 0, 0, 0, 0, 0, 0, 0], //lvl10
-		[0, 0, 2, 0, 0, 0, 0, 0, 0], //lvl11
-		[0, 0, 2, 0, 0, 0, 0, 0, 0], //lvl12
-		[0, 0, 2, 0, 0, 0, 0, 0, 0], //lvl13
-		[0, 0, 2, 0, 0, 0, 0, 0, 0], //lvl14
-		[0, 0, 2, 0, 0, 0, 0, 0, 0], //lvl15
-		[0, 0, 2, 0, 0, 0, 0, 0, 0], //lvl16
-		[0, 0, 0, 2, 0, 0, 0, 0, 0], //lvl17
-		[0, 0, 0, 2, 0, 0, 0, 0, 0], //lvl18
-		[0, 0, 0, 2, 0, 0, 0, 0, 0], //lvl19
-		[0, 0, 0, 2, 0, 0, 0, 0, 0] //lvl20
-	],
-
-	spellcastingKnown : { //Optional; Denotes the amount and type of spells the class has access to
-
-		cantrips : [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], //Optional; This can either be one number, an array of 20 numbers, or be omitted for a class that doesn't have access to cantrips. The numbers reflect the amount of cantrips known
-
-		spells : [4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 13, 13, 13, 13, 14, 14, 15, 16, 16, 16],//Optional; This can either be one number, an array of 20 numbers, or be omitted for a class that doesn't have access to spells. The numbers reflect the amount of spells known. For a class that doesn't know spells, but prepares them from a list, you should put "list" here. For a class that uses a spellbook, you should put "book" here.
-
-		prepared : true, //Optional; This indicates that the class has to prepare spells like a cleric/druid/paladin/wizard
-
-	},
-
-	spellcastingList : { //Optional; Only needed if the class doesn't have its own spell list. This object denotes what spells the class has access to. All things in this object constrain the selection of spells that will be available. The contstraints are cumulative.
-
-		class : "wizard", //Required; The name of the class from whose spell list the spells come from. This can be "any" if the spells are not limited by a spell list of just one class. The entry has to match the name of the class in the SpellsList
-
-		school : ["Evoc", "Abjur"], //Optional; An array of abbreviations of spell school names (see SpellsList). These have to be in an array, even if it is just one value. Each entry has to match the name of the spell school in the SpellsList
-
-		level : [0, 4], //Optional; The lower and upper limit of spell levels that the class has access to.
-
-		ritual : false, //Optional; Denotes if only ritual (true) or only non-ritual (false) spells should be included in the list
-
-		spells : ["light", "mending"], //Optional; If a "spells" array is present, all other objects will be ignored and only this list of spells will populate the list of available spells. each entry has to match the name of the spell in the SpellsList
-
-		notspells : ["antipathy/sympathy", "tsunami"], //Optional; Any spells listed in this array will be excluded from the list
-	},
-
-	spellcastingExtra : ["detect magic", "magic missile", "magic weapon", "nystul's magic aura", "dispel magic", "magic circle", "arcane eye", "leomund's secret chest", "planar binding", "teleportation circle"], //Optional; An array of spells that are added to the spell list from which the class can choose. If the class prepares spells, than this list of spells are always considered prepared. Each entry has to match the name of the entry of the spell in the SpellsList exactly
+//	spellcastingExtra : ["detect magic", "magic missile", "magic weapon", "nystul's magic aura", "dispel magic", "magic circle", "arcane eye", "leomund's secret chest", "planar binding", "teleportation circle"], //Optional; An array of spells that are added to the spell list from which the class can choose. If the class prepares spells, than this list of spells are always considered prepared. Each entry has to match the name of the entry of the spell in the SpellsList exactly
 	//You can also have the list be added to the known spells of a class by making the 101th entry in the array read "AddToKnown" (i.e. spellcastingExtra[100] = "AddToKnown");
 
-	features : { //required;  the class features. Each works the same way, so only a couple of example are given. You can add as many as you want
+	features : {
+
+		"spellcasting" : {
+				name : "Spellcasting",
+				source : [["WBN:W", 3],],
+				minlevel : 1,
+				description : desc([
+					"I can cast prepared witch cantrips/spells, using Wisdom as my spellcasting ability",
+					"I can use an arcane focus or household object as a spellcasting focus for my witch spells",
+					"I can cast my prepared witch spells as rituals if they have the ritual tag"
+				})
+			},
 
 		"fighting style" : { //note the use of lower case characters
 			name : "Fighting Style", //required; the name of the class feature
