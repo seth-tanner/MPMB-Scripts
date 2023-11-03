@@ -101,11 +101,6 @@ ClassList["witch"] = {
 		spells : "list"
 		prepared : true, 
 	},
-
-
-//	spellcastingExtra : ["detect magic", "magic missile", "magic weapon", "nystul's magic aura", "dispel magic", "magic circle", "arcane eye", "leomund's secret chest", "planar binding", "teleportation circle"], //Optional; An array of spells that are added to the spell list from which the class can choose. If the class prepares spells, than this list of spells are always considered prepared. Each entry has to match the name of the entry of the spell in the SpellsList exactly
-	//You can also have the list be added to the known spells of a class by making the 101th entry in the array read "AddToKnown" (i.e. spellcastingExtra[100] = "AddToKnown");
-
 	features : {
 
 		"spellcasting" : {
@@ -117,202 +112,409 @@ ClassList["witch"] = {
 					"I can use an arcane focus or household object as a spellcasting focus for my witch spells",
 					"I can cast my prepared witch spells as rituals if they have the ritual tag"
 				})
-			},
-
-		"fighting style" : { //note the use of lower case characters
-			name : "Fighting Style", //required; the name of the class feature
-			source : ["P", 72], //required; the source of the class feature
-			minlevel : 1, //required; the level at which the feature is gained
-			description : "\n   " + "Choose a Fighting Style using the \"Choose Feature\" button above", //required; the text to put in the "Class Features" field
-			choices : ["Great Weapon Fighting", "Protection", "Two-Weapon Fighting"], //optional; choices the feature offers, if any.
-			choicesNotInMenu : true, //optional: this tells the sheet not to put the choices into the "Choose Options" menu on the second page. Use this is you want to have the choices selected through another class feature. See for an example of this the "Draconic Bloodline" sorcerer archetype. // Note that you always want to have the choices listed in the choices attribute, because otherwise they won't be updated if they have level-dependent features
-			"great weapon fighting" : { //required if "choices" is defined; has to be exactly the same as how it is written in the "choices" entry. Note the use of lower case!
-				name : "Great Weapon Fighting Style", //required;
-				description : "\n   " + "Reroll 1 or 2 on damage if wielding two-handed/versatile melee weapon in both hands" //required;
-			},
-
-			"protection" : { //has to be exactly the same as how it is written in the "choices" entry. Note the use of lower case!
-				name : "Protection Fighting Style",
-				description : "\n   " + "As a reaction, I can give disadv. on an attack made vs. someone within 5 ft of me" + "\n   " + "I need to be wielding a shield and be able to see the attacker to do this",
-				action : ["reaction", ""] //optional; adds the name of this choice to the reaction list when chosen. The options are "action", "bonus action", and "reaction" //the second value in the array is added as a suffix for the "name" of the feature when entered into the action field
-			},
-
-			"two-weapon fighting" : { //has to be exactly the same as how it is written in the "choices" entry. Note the use of lower case!
-				name : "Two-Weapon Fighting Style",
-				description : "\n   " + "I can add my ability modifier to the damage of my off-hand attacks",
-
-				calcChanges : { //optional; adds stuff to the calculation of attacks and/or HP
-
-					hp : "if (classes.known.sorcerer) {extrahp += classes.known.sorcerer.level; extrastring += \"\\n + \" + classes.known.sorcerer.level + \" from Draconic Resilience (Sorcerer)\";};", //optional; string to be run using eval() when calculating the number of HP in the HP tooltip and automation
-
-					atkCalc : ["if (isOffHand) {output.modToDmg = true; }; ", "When engaging in two-weapon fighting, I can add my ability modifier to the damage of my off-hand attacks."], //optional; ["eval string", "explanation string"]; change something in the calculation of the Damage and To Hit of attacks; The first value in the array is stringified code that is run using eval(), the second entry is an explanation of what is being altered so that it can be displayed in a dialogue. This second entry can be left empty, as ""
-
-					atkAdd : ["if (WeaponName.match(/unarmed strike/i)) {fields.Description += 'Counts as magical';}; ", "My unarmed strikes count as magical for overcoming resistances and immunities."], //optional;  ["eval string", "explanation string"]; works just like atkDmg, but affects the weapon attributes when they are applied to the sheet. With this you can change the weapon's description, range, damage die, attribute, etc. etc. However, this will only be applied to recognized weapons
-
-						// Note that you need to use two back slashes for things in the eval code here, because it is first added to a string, and then run as code. See the hp for an example, with the \\n
-
-						// For the eval strings for the attack calculations ('atkCalc' or 'atkAdd') there are some variables that you can use to test against:
-
-							// The variable WeaponName contains the recognized weapon object name as it is used in the WeaponsList object (or "" in atkCalc if the weapon is not a recognized weapon);
-
-							// The object "theWea" is the WeaponsList[WeaponName] object for the recognized weapon (or 'undefined' in atkCalc if the weapon is not a recognized weapon);
-
-							// You can use the booleans 'isOffHand', 'isMeleeWeapon', 'isRangedWeapon', 'isSpell' (also true for cantrips), 'isDC'
-
-							// If the attack is a spell that is found on the SpellList, the variable thisWeapon[3] contains the name of the entry in the SpellList
-
-							// The object "fields" has all the values of the different fields of the attack (fields.Proficiency, fields.Mod, fields.Range, fields.Damage_Type, fields.Description, fields.To_Hit_Bonus, fields.Damage_Bonus, fields.Damage_Die, fields.Weight);
-
-							// You can change the attributes of the "fields" object with the eval-string of atkAdd to affect what is put into the fields.
-
-							// You can use the attributes of the "fields" object with the eval-string of atkCalc to check for things, but changing them will have no effect on the sheet.
-
-							// With the atkCalc you have to change the "output" object in order to affect the outcome of the calculations. This object has the following attributes: output.prof (wether or not to add the proficiency bonus to the To Hit), output.die (Damage Die to use), output.mod (ability modifier), output.modToDmg (whether or not to add the ability modifier to Damage), output.magic (any magic bonus that's to be added to both To Hit and Damage), output.bHit (the To Hit bonus from the Blue Text/Modifier field), output.bDmg (the Damage bonus from the Blue Text/Modifier field), output.extraHit (a number added to the To Hit that is reserved for this eval), output.extraDmg (a number added to the damage that is reserved for this eval)
-				}
-			},
 		},
-
-		"arcane initiate" : {
-			name : "Arcane Initiate",
-			source : ["S", 125],
-			minlevel : 1,
-			description : "\n   " + "I gain proficiency with Arcana and two wizard cantrips that count as cleric cantrips",
-
-			skills : ["Arcana"], //optional; an array of skills with which proficiency is gained
-
-			skillstxt : "\n\n" + toUni("Arcane Domain") + ": Arcana.", //optional; the text that has to be added to the skill tooltips
-
-			spellcastingBonus : { //optional; an object that adds something to the "Bonus Spells" section of the spell selection dialog //this object can have all the same attributes as the "spellcastingList" object, but must also have a "name" defined" //the other things that can be defined in this that are not in the "spellcastingList" object, are the "selection", "times" and "prepared" values
-
-				name : "Arcane Initiate", //required; this is used to identify the object, so must be an unique name
-
-				class : "wizard", //optional but required if not including the "spells" entry; see "spellcastingList" object
-
-				level : [0, 0], //optional; see "spellcastingList" object
-
-				school : ["Necro"], //optional; see "spellcastingList" object
-
-				spells : ["light"], //optional, but required if not including the "class" entry; see "spellcastingList" object
-
-				notspells : ["mending"], //optional; see "spellcastingList" object
-
-				selection : ["light"], //optional if "spells" is defined; this is the default selection for the array specified in "spells"
-
-				times : 2, //optional; this is the number of times the bonus spells should be added. //This can also be an array of 20 values. That way the number of times are level-dependent
-
-				prepared : true, //optional; if set to 'true', this makes the spell selected for this/these bonus spells to automatically get a checked off checkbox in the first column, similar to domain spells for a cleric
-
-				atwill : true, //optional; if set to 'true', this makes the spell selected for this/these bonus spells to get "At Will" in the first column
-
-				oncesr : true, //optional; if set to 'true', this makes the spell selected for this/these bonus spells to get "1×SR" in the first column
-
-				oncelr : true, //optional; if set to 'true', this makes the spell selected for this/these bonus spells to get "1×LR" in the first column
-
-				firstCol : "8", //optional; if set to any value, this makes the spell selected for this/these bonus spells to get the first two letters/numbers of that value in the first column
-			},
-
-			spellFirstColTitle : "Ki", //optional, only works if spellcastingBonus exists; if set to any value, this makes the first column of the captions on the spell sheet be set to the first two letters/numbers of that value
-
-			vision : [["Darkvision", 60], ["Sunlight Sensitivity", 0]], //optional; An array of arrays that each have a length of 2; This adds the first value of each array to the Senses field. The second value is the range in feet. If no range is needed, put a 0 there. You can also add a modifier like "+30" or "*2" to have the appropriate calculation done with the range of sense
+		"witchraft" : {
+				name : "Witchcraft",
+				source : [["WBN:W", 3],],
+				minlevel : 1,
+				description : desc([
+					"I can create a token using 1 hr of labor and expending a spell slot of whatever spell I put in it",
+					"I must make a wis check using artisan's tools, DC 10+ spell level",
+					"I can do this once per short/long rest, and can have a number of tokens = PB",
+					"",
+					"I can also permanently sacrifice a spell slot to create a talisman",
+					"I must spend 24 total hours of labor and make a DC 20 wis check using artisan's tools",
+					"A talisman can be used to cast a spell once per day, resetting at dawn.",
+					"I can instead sacrifice a 3rd or 6th level spell slot to craft a magic item as shown on the table on p. 4"
+				}),
+				recovery : "short or long rest",
+				action : ["1 hr", "Craft Token"],
+				action : ["24 hr", "Craft Talisman"]
 		},
-
-		"spellcasting" : {
-			name : "Spellcasting",
-			source : ["P", 114],
-			minlevel : 1,
-			description : "\n   " + "I can cast prepared wizard cantrips/spells, using Intelligence as my spellcasting ability" + "\n   " + "I can use an arcane focus as a spellcasting focus" + "\n   " + "I can cast all wizard spells in my spellbook as rituals if they have the ritual tag",
-			additional : ["3 cantrips known", "3 cantrips known", "3 cantrips known", "4 cantrips known", "4 cantrips known", "4 cantrips known", "4 cantrips known", "4 cantrips known", "4 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known", "5 cantrips known"], //optional; text to display in the header of the feature. This can be one value, but can also be an array of 20 values, one for each level.
+		"witch's familiar" : {
+				name : "Witch's Familiar",
+				source : [["WBN:W", 3],],
+				minlevel : 1,
+				description : desc([
+					"I have a magical familiar who acts independently of me but generally heeds my requests",
+					"When they drop to 0 hp I can expend a spell slot of 1st level or higher to keep them at 1 hp as a reaction",
+					"If they die I can revive them during a short or long rest, expending 10gp of herbs or incense",
+					"I can communicate telepathically with them and can see through their eyes and ears as an action.",
+					"When I cast a spell with a range of touch, my familiar can deliver the spell within 100 ft with their reaction.",
+					"I can transfer a spell's concentration to my familiar as a bonus action, but cannot concentrate on a spell myself while doing so"
+				}),
+				action : ["reaction", "Save Familiar"],
+				action : ["bonus action", "Transfer Concentration"]
 		},
-
-		"second wind" : {
-			name : "Second Wind",
-			source : ["P", 72],
-			minlevel : 1,
-			description : "\n   " + "As a bonus action, I regain 1d10 + fighter level HP; I can use this once per short rest",
-			additional : ["1d10+1", "1d10+2", "1d10+3", "1d10+4", "1d10+5", "1d10+6", "1d10+7", "1d10+8", "1d10+9", "1d10+10", "1d10+11", "1d10+12", "1d10+13", "1d10+14", "1d10+15", "1d10+16", "1d10+17", "1d10+18", "1d10+19", "1d10+20"],
-			usages : 1, //optional; number of times it can be used. This can be one value, but can also be an array of 20 values, one for each level. It is recommended to use a numerical value, but if you use a string, include " per " at the end, like "1d10 per "
-			recovery : "short rest", //required if "usages" is defined; way of getting the limited feature recharged. Only if you define both the 'usages' and 'recovery' will the feature be added to the limited features
-			action : ["bonus action", ""] //optional; adds the name of this feature to the bonus action list when chosen. The options are "action", "bonus action", and "reaction"
-		},
-
-		"action surge" : {
-			name : "Action Surge",
-			source : ["P", 72],
+		"subclassfeature2" : { //You need at least one entry named "subclassfeatureX". It signals the sheet to ask the user for which subclass he would like to have. The level of this feature should match the level the class needs to select a subclass. Once a subclass is selected, any feature with "subclassfeature" in the object name in the class entry will be ignored.
+			name : "Coven",
+			source : ["WBN:W", 6],
 			minlevel : 2,
-			description : "\n   " + "I can take one additional action on my turn on top of my normally allowed actions",
-			usages : [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2], //example of usages varying per level
-			recovery : "short rest",
-
-			armor : [false, false, true, false], //optional; the 4 entries are for proficiency in: ["light", "medium", "heavy", "shields"]. Be sure to always add all four statements of true/false!
-
-			weapons : [true, false, ["hand crossbow"]], //optional; the 3 entries are for: ["simple", "martial", "other"]. Be sure to always add both statements of true/false!
-
-			addMod : { type : "skill", field : "Init", mod : "Int", text : "I can add my Intelligence modifier to initiative rolls." }, //optional; This is an object, or an array of similar objects, for adding a modifier to a modifier field. Using this will make it so that the modifier is added to any value that is already there. // The 'mod' attribute can be any combination of numbers, mathematical operators, and three-letter ability score abbreviations // The 'type' attribute can be "skill" or "save", but can also be left empty "" // The 'field' attribute depends on the type, for "skill" it can be the name of a skill, or "Init" for initiative, or "All" for the all skills modifier; for "save" it can be the three-letter abbreviation of an ability score, or "All" for the all saves modifier. // If the 'type' attribute is left empty, the 'field' attribute has to be the exact name of the field the modifier has to be added to // The 'text' attribute is an explanation of why the modifier was added //NOTE: for modifiers to attacks, use calcChanges
-
-			addarmor : "Stone's Durability", //optional; a string of the name of the armour that is literally put in the Armor Description field when the class feature is applicable, and removed if not
+			description : "\n   " + "Choose a Coven you identify with and put it in the \"Class\" field" + "\n   " + "Choose either Coven of the Claw, Coven of the Green, or Coven of the Heart",
 		},
-
-		"subclassfeature3" : { //You need at least one entry named "subclassfeatureX". It signals the sheet to ask the user for which subclass he would like to have. The level of this feature should match the level the class needs to select a subclass. Once a subclass is selected, any feature with "subclassfeature" in the object name in the class entry will be ignored.
-			name : "Martial Archetype",
-			source : ["P", 72],
-			minlevel : 3,
-			description : "\n   " + "Choose a Martial Archetype you strive to emulate and put it in the \"Class\" field" + "\n   " + "Choose either Champion, Battle Master, Eldritch Knight, or Purple Dragon Knight",
-		},
-
-		"subclassfeature3.1" : {
+		"subclassfeature2.1" : {
 			name : "", //any feature who's name is empty like this one is, will be ignored. Since v12.5 of the sheet, an entry like this serves no function
-			minlevel : 3,
+			minlevel : 2,
 		},
-
-		"natural antivenom" : {
-			name : "Natural Antivenom",
-			source : ["UA:MC", 7],
-			minlevel : 9,
-			description : desc([
-				"I have advantage on saves vs. poison and resistance to poison damage",
-				"When I use a poultice, in addition to healing, I cure one poison effect on the creature",
-				"I gain proficiency with Constitution saving throws"
-			]),
-
-			savetxt : { // Optional; this attribute defines entries to add to the field for "Saving Throw Advantages / Disadvantages"
-
-				text : ["Dex save vs. area effects: fail \u2015 half dmg, success \u2015 no dmg", "Magic can't put me to sleep"], // Optional; this is an array of strings, and each of those strings is added to the field exactly as presented here
-
-				immune : ["poison", "disease"], // Optional; this is an array of strings that the character is immune to. This is put in the field after the text "Immune to ", so in this example it would result in "Immune to poison and disease"
-
-				adv_vs : ["traps", "charmed"] // Optional; this is an array of things that the character has advantage on saves against. This is put in the field after the text "Adv. on saves vs. ", so in this example it would result in "Adv. on saves vs. traps and charmed"
-			},
-
-			dmgres : ["Poison"], //optional; an array of damage types that the class gets resistance against. // If the resistance has a condition attached to it, like only being against nonmagical attacks, substitute the entry in the array with an array of 2: [the damage type, the damage type with the condition]. // For example: [["Bludgeoning", "Bludg. (nonmagical)"], ["Piercing", "Pierc. (nonmagical)"], ["Slashing", "Slash. (nonmagical)"]]
-
-			saves : ["Con"], //optional; an array of the ability scores with which the class feature grants proficiency in saving throws
-
-			toolProfs : [["Musical instrument", 3], ["Thieves' tools", "Dex"]], // optional; this is an array with the tool proficiencies gained. Each entry can be its own array of 2 entries. The first entry is the name of the tool and the second entry is either 1) a number if the tool is yet to be chosen, or 2) the 3-letter ability score abbreviation if the tool is to be listed in the skill section and have a bonus calculated
-
-			languageProfs : [1, "Elvish"], // optional; this is an array of the language proficiencies gained. An entry can either be 1) a string that represents the language learned or 2) a number which is the number of language gained that can be chosen by the player
-
-			speed : { //required; This sets a value for one or more speed modes, and/or a value to be added to a specific speed mode or to all speed modes // the attributes of this object can be "walk", "burrow", "climb", "fly", "swim", and "allModes"
-
-				// all of the following attributes are optional and you can add more ("burrow" isn't part of this example!)
-
-				walk : { spd : 30, enc : 20 }, // the objects "walk", "burrow", "climb", "fly", "swim" are all the same, they are an object with two attributes, 'spd' for the speed in feet, and 'enc' for the encumbered speed in feet.
-
-				climb : { spd : "+50", enc : 0 }, // instead of numbers, you can also have modifiers. Modifiers are a string, starting with a mathematical operator, followed by a number (e.g. "-10", "+20"). // a value that is zero is ignored
-
-				fly : { spd : "walk", enc : 0 }, // instead of a number/modifier, you can also set the attribute to "walk". This makes the speed mode assume the walking speed // Using an underscore as the first character means the value is only added if the value would be non-zero
-
-				swim : { spd : "fixed 60", enc : "fixed 60" }, // if you include the word "fixed" together with a number, the movement mode will be that number, without any modifiers from other sources (like the Monk's speed bonus). However, if another entry that isn't 'fixed' does end up with a higher total while including any modifiers, that speed is used instead
-
-				allModes : "+10" // the 'allModes' attribute can only consist of a modifier. This modifier is applied to all speed modes, both normal and encumbered. It is only applied if the speed mode exists, it won't give the character a burrow speed if it would otherwise have none, for example
-			},
+		"retributive curses" : { 
+			name : "Retributive Curses",
+			source : ["WBN:W", 5],
+			minlevel : 3,
+			description :  desc([
+					"When a creature within 60 feet of me damages me or causes me to make a saving throw, I can cast a curse spell on that creature as a reaction",
+					"I can also use this reaction when a creature within range forces a saving throw from a creature holding a token or talisman I've created"
+				})
+			calcChanges : {
+				spellAdd : [
+					function (spellKey, spellObj, spName) {
+						if (spName == ["bane", "hideous laughter", "witch's grasp", "blindness/deafness", "ray of enfeeblement", "tongue-tie", "bestow curse", "phantasmal killer", "othershoes", "irresistable dance", "flesh to stone", "miser's menace", "imprisonment"]) {
+							spellObj.firstCol = "(curse)";
+							spellObj.range = What("Unit System") === "metric" ? ConvertToMetric("60 ft", 0.5) : "60 ft";
+							spellObj.time = "1 rea";
+						};
+					},
+					"When a creature within 60 feet of me damages me or causes me to make a saving throw, I can cast a curse spell on that creature as a reaction."
+				]
+			}
+		},
+		"wracking curses" : {
+			name : "Wracking Curses",
+			source : ["WBN:W", 5],
+			minlevel : 5,
+			additional : levels.map(function (n) {
+					if (n < 5) return "";
+					var cr = n < 11 ? "1" : "2";
+				}),
+			description :  desc([
+					"Once per turn when I deal damage to a creature under the effects of a Curse, I can deal an extra " + cr + "d10 psychic damage to it."
+				})
+		},
+		"willful walls" : {
+				name : "Willful Walls",
+				source : [["WBN:W", 5],],
+				minlevel : 18,
+				description : desc([
+					"I can create a sanctum in 8 hours. I must have taken a long rest there and have permission from the owner",
+					"I determine my sanctum's boundaries, but must be able to travel its perimeter in an hour or less",
+					"When it is 7 days old I can cast the Hallow spell on one 60 ft. radius area without material components",
+					"If I am in my sanctum when a creature tries to force entry into this area, I can impose disadvantage on its Cha save",
+					"I can only have one sanctum at a time. If I designate a new one, the Hallow spell cast on a previous sanctum immediately ends."
+				})
+		},
+		"true craft" : {
+				name : "True Craft",
+				source : [["WBN:W", 5],],
+				minlevel : 20,
+				description : desc([
+					"I can create a token or talisman using a spell of 8th level or lower from any class's spell list",
+					"To do so I must expend a spell slot one level higher than the spell I choose"
+				})
 		},
 	}
 }
+}
 
+AddSubClass( 
+	"witch", 
+	"claw", 
+	{ 
+		regExpSearch : /claw/i, 
+		subname : "Coven of the Claw", 
+		source : ["WBN:W", 6], 
+		features : {
+			"subclassfeature2" : { // has to start with "subclassfeature" followed by a number. Note that the name has to be unique for this subclass, but it can be the same name as one of the features of the class in the ClassList variable. If you use the same name as a feature in the ClassList variable, it will be overwritten with this entry
+				name : "Claw Spells",
+				source : ["WBN:W", 6],
+				minlevel : 2,
+				description : desc([
+					"I learn the Poison Spray and Primal Savagery cantrips and gain the ability to cast certain spells",
+					"These are always prepared, but don't count against the number of spells I can prepare"
+				]),
+				spellcastingBonus : {
+					name : "Claw Spells",
+					spells : ["poison spray", "primal savagery"],
+					selection : ["poison spray", "primal savagery"]
+				},
+				spellcastingExtra : ["hunter's mark", "speak with animals", "alter self", "spider climb", "conjure animals", "haste", "dominate beast", "wyrding", "insect plague", "hold monster"]
+			},
+			"subclassfeature2.1" : {
+				name : "Curse of the Claw",
+				source : ["WBN:W", 6],
+				minlevel : 2,
+				description : "When I cast Hunter's Mark or a curse spell on a creature, I can use a bonus action to make a male weapon attack against an unaffected creature within 5 feet of me",
+				action : ["bonus action", "Curse of the Claw"]
+			},
+			"subclassfeature2.2" : {
+				name : "Crimson Gift",
+				source : ["WBN:W", 6],
+				minlevel : 2,
+				description : desc([
+					"I gain proficiency with light and medium armor, and with shields",
+					"My hit point maximum increases by an additional 1 hp per level",
+					"I can use Wisdom instead of Strength or Dexterity for weapon attack and damage rolls",
+				]),
+				armorProfs : [true, true, false, true],
+				calcChanges : {
+					atkAdd : [
+						function (fields, v) {
+							if (What('Wis Mod') > What(AbilityScores.abbreviations[fields.Mod - 1] + ' Mod')) {
+								fields.Mod = 5;
+							};
+						},
+					]
+				}
+				calcChanges : {
+					hp : function (totalHD) {
+						if (classes.known.witch) {
+							return [classes.known.witch.level, "Crimson Gift (witch level)"];
+						}
+					}
+				}
+			},
+			"subclassfeature6" : {
+				name : "Call to the Hunter",
+				source : ["WBN:W", 6],
+				minlevel : 6,
+				description :  desc([
+					"I can call on an allied beast in times of need. I choose either Air, Land, or Water",
+					"The creature disappears after 1 minute or when it is reduced to 0 hp",
+					"It shares my initiative count in combat but acts immediately after me. It obeys my commands or takes the Dodge action",
+					"I can expend a spell slot of 2nd level or higher as an action to regain the use of this feature."
+				]),
+				recovery: "short or long rest"
+				uses : 1
+				action : ["action", "Call to the Hunter"]
+				creaturesAdd : [["Allied Hunter", true]],
+				creatureOptions : [{
+					name : "Allied Hunter",
+					source : [["WBN:W", 7]],
+					size : 4,
+					type : "Beast",
+					alignment : "",
+					ac : 13,
+					hp : 20,
+					had : [],
+					speed : "30 ft, fly 30 ft (hover)",
+					scores : [10, 14, 14, 13, 15, 11],
+					damage_immunities : "fire",
+					condition_immunities : "charmed, frightened, grappled, prone, restrained",
+					senses : "Darkvision 60 ft",
+					passivePerception : 12,
+					languages : "understands the languages of its creator",
+					challengeRating : "1/2",
+					proficiencyBonus : 2,
+					proficiencyBonusLinked : true,
+					attacksAction : 1,
+					attacks : [{
+						name : "Flame Seed",
+						ability : 5,
+						damage : [1, 6, "fire"],
+						range : "60 ft",
+						description : "Ranged weapon attack",
+						modifiers : ["", "Prof"],
+						abilitytodamage : false,
+						useSpellMod : "druid"
+					}, {
+						name : "Fiery Teleportation",
+						ability : 5,
+						damage : [1, 6, "fire"],
+						range : "5-ft radius",
+						description : "Dex save for all within 5 ft of teleportation origin, success - no damage; See traits",
+						dc : true,
+						modifiers : ["", "Prof"],
+						abilitytodamage : false,
+						useSpellMod : "druid"
+					}, {
+						name : "Fiery Manifestation",
+						ability : 5,
+						damage : [2, 6, "fire"],
+						range : "10-ft radius",
+						description : "Dex save for all within 10 ft where spirit is summoned, success - no damage",
+						dc : true,
+						abilitytodamage : false,
+						useSpellMod : "druid"
+					}],
+					features : [{
+						name : "Creator",
+						description : "The spirit obeys the commands of its creator and has the same proficiency bonus. It takes its turn immediately after its creator, on the same initiative count. It can move and take reactions on its own, but only takes the Dodge action on its turn unless its creator takes a bonus action to command it to take another action. If its creator is incapacitated, it can take any action, not just Dodge."
+					}],
+					actions : [{
+						name : "Fiery Teleportation",
+						description : "The spirit and each willing creature of its creator's choice within 5 ft of it teleport up to 15 ft to unoccupied spaces its creator can see. Then each creature within 5 ft of the space that the spirit left must succeed on a Dexterity saving throw against its creator's spell save DC or take fire damage equal to 1d6 + its proficiency bonus."
+					}],
+					traits : [{
+						name : "Fiery Manifestation",
+						description : "The spirit appears in an unoccupied space of its creator's choice that its creator can see within 30 ft. Each creature within 10 ft of the spirit (other than its creator) when it appears must succeed on a Dexterity saving throw against its creator's spell save DC or take 2d6 fire damage."
+					}],
+					header : "Wildfire",
+					calcChanges : {
+						hp : function (totalHD, HDobj, prefix) {
+							if (!classes.known.witch) return;
+							var drdLvl = classes.known.witch.level;
+							var drdLvl5 = 5 * drdLvl;
+							HDobj.alt.push(5 + drdLvl5);
+							HDobj.altStr.push(" = 10 as a base\n + 5 \xD7 " + drdLvl + " from five times its creator's witch level (" + drdLvl5 + ")");
+						},
+						setAltHp : true
+					}	
+				}]
+			},
+			"subclassfeature10" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+			"subclassfeature14" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+		}
+	}
+);
 
-/* CHANGES SINCE V12.999:
-	1. 'armor' attribute has been replaced with 'armorProfs', but is otherwise identical.
-	2. 'weapons' attribute has been replaced with 'weaponProfs', but is otherwise identical.
-	3. 'primaryAbility' should no longer have the class' name in it, nor a line break at the start, a bullet point, or a semicolon at the end.
-	4. 'prereqs' should no longer have the class' name in it, nor a line break at the start, a bullet point, or a semicolon at the end.
-*/
+AddSubClass( 
+	"witch", 
+	"green", 
+	{ 
+		regExpSearch : /green/i, 
+		subname : "Coven of the Green", 
+		source : ["WBN:W", 7], 
+		features : {
+			"subclassfeature2" : { // has to start with "subclassfeature" followed by a number. Note that the name has to be unique for this subclass, but it can be the same name as one of the features of the class in the ClassList variable. If you use the same name as a feature in the ClassList variable, it will be overwritten with this entry
+				name : "Rallying Cry",
+				source : ["S", 128],
+				minlevel : 3,
+				description : "\n   " + "When I use Second Wind, I can also heal three allies within 60 that can see or hear me",
+				additional : ["", "", "3 HP", "4 HP", "5 HP", "6 HP", "7 HP", "8 HP", "9 HP", "10 HP", "11 HP", "12 HP", "13 HP", "14 HP", "15 HP", "16 HP", "17 HP", "18 HP", "19 HP", "20 HP"],
+				eval : "RemoveAction(\"bonus action\", \"Second Wind\"); AddAction(\"bonus action\", \"Second Wind (+ Rallying Cry)\", \"Purple Dragon Knight\")", //eval is custom code that is run when the feature is added. It is used here, because the "Second Wind" bonus action is removed, and replaced by the "Second Wind (+ Rallying Cry)" bonus action. If you instead just want to add a bonus action for "Rallying Cry", use the action object (i.e. action : ["bonus action", ""],)
+				removeeval : "RemoveAction(\"bonus action\", \"Second Wind (+ Rallying Cry)\"); AddAction(\"bonus action\", \"Second Wind\", \"Fighter\")", //removeeval is custom code that is run when the feature is removed. Here the "Second Wind (+ Rallying Cry)" bonus action is removed and replaced by the plain "Second Wind" bonus action
+			},
+			"subclassfeature2.1" : {
+				name : "Royal Envoy",
+				source : ["S", 128],
+				minlevel : 7,
+				description : "\n   " + "I gain proficiency and expertise with the Persuasion skill" + "\n   " + "If already proficient, I can choose Animal Handling, Insight, Intimidation, or Perform.",
+				skillstxt : "\n\n" + toUni("Purple Dragon Knight (Royal Envoy)") + ": Persuasion proficiency and expertise; if already proficient, choose one from Animal Handling, Insight, Intimidation, and Performance.",
+				skills : ["Persuasion"],
+			},
+			"subclassfeature6" : {
+				name : "Inspiring Surge",
+				source : ["S", 128],
+				minlevel : 10,
+				description : "\n   " + "When I use my Action Surge, I can inspire an ally within 60 ft that can see or hear me" + "\n   " + "The ally can then use its reaction to make one melee or ranged weapon attack",
+				additional : ["", "", "", "", "", "", "", "", "", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "2 allies", "2 allies", "2 allies"],
+			},
+			"subclassfeature10" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+			"subclassfeature14" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+		}
+	}
+);
+
+AddSubClass( 
+	"witch", 
+	"heart", 
+	{ 
+		regExpSearch : /heart/i, 
+		subname : "Coven of the Heart", 
+		source : ["WBN:W", 8], 
+		features : {
+			"subclassfeature2" : { // has to start with "subclassfeature" followed by a number. Note that the name has to be unique for this subclass, but it can be the same name as one of the features of the class in the ClassList variable. If you use the same name as a feature in the ClassList variable, it will be overwritten with this entry
+				name : "Rallying Cry",
+				source : ["S", 128],
+				minlevel : 3,
+				description : "\n   " + "When I use Second Wind, I can also heal three allies within 60 that can see or hear me",
+				additional : ["", "", "3 HP", "4 HP", "5 HP", "6 HP", "7 HP", "8 HP", "9 HP", "10 HP", "11 HP", "12 HP", "13 HP", "14 HP", "15 HP", "16 HP", "17 HP", "18 HP", "19 HP", "20 HP"],
+				eval : "RemoveAction(\"bonus action\", \"Second Wind\"); AddAction(\"bonus action\", \"Second Wind (+ Rallying Cry)\", \"Purple Dragon Knight\")", //eval is custom code that is run when the feature is added. It is used here, because the "Second Wind" bonus action is removed, and replaced by the "Second Wind (+ Rallying Cry)" bonus action. If you instead just want to add a bonus action for "Rallying Cry", use the action object (i.e. action : ["bonus action", ""],)
+				removeeval : "RemoveAction(\"bonus action\", \"Second Wind (+ Rallying Cry)\"); AddAction(\"bonus action\", \"Second Wind\", \"Fighter\")", //removeeval is custom code that is run when the feature is removed. Here the "Second Wind (+ Rallying Cry)" bonus action is removed and replaced by the plain "Second Wind" bonus action
+			},
+			"subclassfeature2.1" : {
+				name : "Royal Envoy",
+				source : ["S", 128],
+				minlevel : 7,
+				description : "\n   " + "I gain proficiency and expertise with the Persuasion skill" + "\n   " + "If already proficient, I can choose Animal Handling, Insight, Intimidation, or Perform.",
+				skillstxt : "\n\n" + toUni("Purple Dragon Knight (Royal Envoy)") + ": Persuasion proficiency and expertise; if already proficient, choose one from Animal Handling, Insight, Intimidation, and Performance.",
+				skills : ["Persuasion"],
+			},
+			"subclassfeature6" : {
+				name : "Inspiring Surge",
+				source : ["S", 128],
+				minlevel : 10,
+				description : "\n   " + "When I use my Action Surge, I can inspire an ally within 60 ft that can see or hear me" + "\n   " + "The ally can then use its reaction to make one melee or ranged weapon attack",
+				additional : ["", "", "", "", "", "", "", "", "", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "2 allies", "2 allies", "2 allies"],
+			},
+			"subclassfeature10" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+			"subclassfeature14" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+		}
+	}
+);
+
+AddSubClass( 
+	"witch", 
+	"wicked", 
+	{ 
+		regExpSearch : /wicked/i, 
+		subname : "Coven of the Wicked", 
+		source : ["WBN:W", 9], 
+		features : {
+			"subclassfeature2" : { // has to start with "subclassfeature" followed by a number. Note that the name has to be unique for this subclass, but it can be the same name as one of the features of the class in the ClassList variable. If you use the same name as a feature in the ClassList variable, it will be overwritten with this entry
+				name : "Rallying Cry",
+				source : ["S", 128],
+				minlevel : 3,
+				description : "\n   " + "When I use Second Wind, I can also heal three allies within 60 that can see or hear me",
+				additional : ["", "", "3 HP", "4 HP", "5 HP", "6 HP", "7 HP", "8 HP", "9 HP", "10 HP", "11 HP", "12 HP", "13 HP", "14 HP", "15 HP", "16 HP", "17 HP", "18 HP", "19 HP", "20 HP"],
+				eval : "RemoveAction(\"bonus action\", \"Second Wind\"); AddAction(\"bonus action\", \"Second Wind (+ Rallying Cry)\", \"Purple Dragon Knight\")", //eval is custom code that is run when the feature is added. It is used here, because the "Second Wind" bonus action is removed, and replaced by the "Second Wind (+ Rallying Cry)" bonus action. If you instead just want to add a bonus action for "Rallying Cry", use the action object (i.e. action : ["bonus action", ""],)
+				removeeval : "RemoveAction(\"bonus action\", \"Second Wind (+ Rallying Cry)\"); AddAction(\"bonus action\", \"Second Wind\", \"Fighter\")", //removeeval is custom code that is run when the feature is removed. Here the "Second Wind (+ Rallying Cry)" bonus action is removed and replaced by the plain "Second Wind" bonus action
+			},
+			"subclassfeature2.1" : {
+				name : "Royal Envoy",
+				source : ["S", 128],
+				minlevel : 7,
+				description : "\n   " + "I gain proficiency and expertise with the Persuasion skill" + "\n   " + "If already proficient, I can choose Animal Handling, Insight, Intimidation, or Perform.",
+				skillstxt : "\n\n" + toUni("Purple Dragon Knight (Royal Envoy)") + ": Persuasion proficiency and expertise; if already proficient, choose one from Animal Handling, Insight, Intimidation, and Performance.",
+				skills : ["Persuasion"],
+			},
+			"subclassfeature6" : {
+				name : "Inspiring Surge",
+				source : ["S", 128],
+				minlevel : 10,
+				description : "\n   " + "When I use my Action Surge, I can inspire an ally within 60 ft that can see or hear me" + "\n   " + "The ally can then use its reaction to make one melee or ranged weapon attack",
+				additional : ["", "", "", "", "", "", "", "", "", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "1 ally", "2 allies", "2 allies", "2 allies"],
+			},
+			"subclassfeature10" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+			"subclassfeature14" : {
+				name : "Bulwark",
+				source : ["S", 128],
+				minlevel : 15,
+				description : "\n   " + "When I use Indomitable to reroll a Int, Wis, or Cha save, I can extend it to an ally" + "\n   " + "The ally can reroll its failed saving throw against the same affect" + "\n   " + "It only works if I'm not incapacitated, the ally is within 60 ft and can see or hear me",
+			},
+		}
+	}
+);
